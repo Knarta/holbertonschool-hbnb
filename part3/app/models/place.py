@@ -2,6 +2,7 @@
 
 from app.models.base_model import BaseModel
 from sqlalchemy import ForeignKey
+from sqlalchemy.dialects.mysql import LONGTEXT
 from .user import User
 from app import db
 import uuid
@@ -16,6 +17,7 @@ class Place(BaseModel):
     longitude = db.Column(db.Float, nullable=False)
     user_id = db.Column(db.String(36), ForeignKey('users.id'), nullable=False)  # Clé étrangère vers User
     user = db.relationship("User", back_populates="places")
+    image_url = db.Column(LONGTEXT, nullable=True)
 
     # Relations
     reviews = db.relationship('Review', back_populates='place', lazy=True)  # One-to-Many avec Review

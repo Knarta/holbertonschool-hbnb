@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <img src="images/logo.png" alt="logo">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html" id="login-button">Login</a>
+        </nav>
+    </header>
+    <main>
+        <section id="place-details">
+            <p class="place-info">Host: John Doe</p>
+            <p class="place-info">Price: $100 per night</p>
+            <p class="place-info">Description: A beautiful beach house with ocean views.</p>
+            <p class="place-info">Amenities: WiFi, Pool, Kitchen</p>
+       </section>
+        <section id="reviews">
+            <h3>Reviews</h3>
+            <div class="review">
+                <p>Great place! Had a wonderful time.</p>
+                <p>- Alice</p>
+                <p>Rating:
+                    <span class="stars">
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                    </span>
+                </p>
+            </div>
+            <div class="review">
+                <p>Not as expected. The place was a bit dirty.</p>
+                <p>- Bob</p>
+                <p>Rating:
+                    <span class="stars">
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star half">&#9734;</span>
+                    </span>
+                </p>
+            </div>
+        </section>
+
+        <section id="add-review" style="display: none;">
+            <h3>Add a Review</h3>
+            <form id="review-form">
+                <textarea id="review-text" placeholder="Write your review here..." rows="5" required></textarea>
+                <div id="star-rating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <button type="submit">Submit Review</button>
+            </form>
+        </section>
+    </main>
+    <script src="scripts.js"></script>
+</body>
+</html>
