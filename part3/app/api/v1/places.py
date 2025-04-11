@@ -52,20 +52,33 @@ class PlaceList(Resource):
         if not place_data:
             return {'message': 'Invalid input data'}, 400
 
+        amenities = []
+
+        if isinstance(place_data['amenities'], list):
+            for amenity_id in place_data['amenities']:
+                if not isinstance(amenity_id, str):
+                    return {'error': 'Invalid amenity id format'}, 400
+                amenity = facade.get_amenity(amenity_id)
+                amenities.append(amenity)
+
+        place_data['amenities'] = amenities
+
         try:
             new_place = facade.create_place(place_data)
             new_place.validate()
         except (TypeError, ValueError) as e:
             return {'error': str(e)}, 400
         
-        return {"id": new_place.id,
-                "title": new_place.title,
-                "description": new_place.description,
-                "price": new_place.price,
-                "latitude": new_place.latitude,
-                "longitude": new_place.longitude,
-                "owner_id": new_place.owner_id,
-                "amenities": new_place.amenities}, 201
+        return {
+            "id": new_place.id,
+            "title": new_place.title,
+            "description": new_place.description,
+            "price": new_place.price,
+            "latitude": new_place.latitude,
+            "longitude": new_place.longitude,
+            "owner_id": new_place.owner_id,
+            "amenities": new_place.amenities
+        }, 201
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
@@ -81,7 +94,8 @@ class PlaceList(Resource):
                     'latitude': places.latitude,
                     'longitude': places.longitude,
                     'owner_id': places.owner_id,
-                    'amenities': places.amenities
+                    'amenities': places.amenities,
+                    'image_url': places.image_url
                 } for places in places
             ]
         }, 200
