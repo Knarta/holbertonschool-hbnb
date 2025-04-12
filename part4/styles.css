@@ -10,27 +10,31 @@
     font-family: 'Roboto', sans-serif;
 }
 
+html,
 body {
-    background-color: #F9F9F9;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: #FFF5F7;
     color: #333;
     font-family: 'Roboto', sans-serif;
     line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
-    overflow: hidden;
 }
 
 header {
     background: linear-gradient(90deg, #FDE2E4, #FFCAD4);
-    color: #6D6875;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-bottom: 3px solid #FFB3C1;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 header img {
@@ -61,32 +65,31 @@ header nav a:hover {
 }
 
 header .login-button {
-    background-color: #FFCAD4;
-    color: #fff;
+    background: linear-gradient(90deg, #FFCAD4, #F4ACB7);
+    color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1em;
     font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
+}
+
+/* Hide login button when on login page */
+body.login-page header .login-button {
+    display: none;
 }
 
 header .login-button:hover {
-    background-color: #F4ACB7; 
-    transform: translateY(-2px); 
+    background: linear-gradient(90deg, #F4ACB7, #FFCAD4);
+    transform: translateY(-2px);
 }
 
 main {
+    flex: 1;
     padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    margin: auto;
+    overflow-y: auto;
+    background-color: #FFF5F7;
 }
 
 #filter {
@@ -126,58 +129,59 @@ main {
 /* Conteneur des cartes */
 #places-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-    gap: 20px; 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
 #places-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; 
-    padding: 10px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+    overflow-y: auto;
 }
 
 /* Carte individuelle */
 .place-card {
     position: relative;
-    border: none;
-    border-radius: 12px; 
-    overflow: hidden; 
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    background: #fff; 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #FFCAD4;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: white;
+    transition: transform 0.3s ease;
     cursor: pointer;
     display: flex;
-    flex-direction: column; 
-    height: 400px; 
+    flex-direction: column;
+    height: 400px;
+    padding: 1rem;
 }
 
 .place-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(255, 202, 212, 0.3);
 }
 
 /* Image de la carte */
 .place-card img {
     width: 100%;
     height: 180px;
-    object-fit: cover; 
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+    object-fit: cover;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Contenu de la carte */
 .place-card-content {
-    flex: 1; 
+    flex: 1;
     padding: 15px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
-    background-color: #fff; 
+    justify-content: space-between;
+    background-color: #fff;
 }
 
 .place-card h3 {
@@ -188,12 +192,11 @@ main {
 }
 
 .place-card p {
-    font-size: 0.9em; 
+    font-size: 0.9em;
     color: #555;
     margin-bottom: 10px;
     line-height: 1.4;
 }
-
 
 .place-card .details-button {
     display: inline-block;
@@ -201,26 +204,27 @@ main {
     color: #fff;
     border: none;
     padding: 6px 12px;
-    border-radius: 5px; 
-    font-size: 0.85em; 
+    border-radius: 5px;
+    font-size: 0.85em;
     font-weight: bold;
     text-align: center;
     text-decoration: none;
     transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: auto;
     cursor: pointer;
 }
 
 .place-card .details-button:hover {
     background: linear-gradient(145deg, #F4ACB7, #FFCAD4);
-    transform: translateY(-2px); 
+    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .place-card .details-button:active {
-    transform: translateY(1px); 
-    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.7); /* Ombre interne */
+    transform: translateY(1px);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.7);
+    /* Ombre interne */
 }
 
 place-card .details-button:active {
@@ -232,32 +236,24 @@ place-card .details-button:active {
     display: block;
     max-width: 100%;
     height: auto;
-    border-radius: 10px; 
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    object-fit: cover; 
+    object-fit: cover;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .place-image:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); 
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 footer {
-    background-color: #623D96;
-    color: #EAEAEA;
+    background: linear-gradient(90deg, #FDE2E4, #FFCAD4);
+    padding: 1rem;
     text-align: center;
-    margin-top: 20px;
-    padding: 15px;
-    font-size: 1.2em;
-    border-top: 4px solid #FFD700;
-    font-weight: bold;
-    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    margin-top: auto;
+    color: #6D6875;
 }
 
 .logo {
@@ -281,7 +277,7 @@ footer {
 
 #login-section:hover {
     transform: scale(1.02);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); 
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 #login-section h2 {
@@ -296,7 +292,7 @@ footer {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 15px; 
+    gap: 15px;
 }
 
 #login-form label {
@@ -460,15 +456,15 @@ footer {
 }
 
 .review-rating .star.filled {
-    color: gold; 
+    color: gold;
 }
 
 .review-rating .star:hover {
     transform: scale(1.2);
-    color: #FFD700; 
+    color: #FFD700;
 }
 
-.review-rating .star:hover ~ .star {
+.review-rating .star:hover~.star {
     color: #ccc;
 }
 
@@ -574,16 +570,16 @@ footer {
 }
 
 .stars .star.filled {
-    color: gold; 
+    color: gold;
 }
 
 .stars .star:hover {
     transform: scale(1.2);
-    color: #FFD700; 
+    color: #FFD700;
 }
 
-.stars .star:hover ~ .star {
-    color: #ccc; 
+.stars .star:hover~.star {
+    color: #ccc;
 }
 
 @keyframes fadeIn {
@@ -591,6 +587,7 @@ footer {
         opacity: 0;
         transform: scale(0.8);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -598,7 +595,7 @@ footer {
 }
 
 .stars .star.half {
-    color: #ccc; 
+    color: #ccc;
 }
 
 
@@ -643,6 +640,7 @@ footer {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -654,8 +652,131 @@ footer {
         opacity: 0;
         transform: translateX(-50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
     }
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    color: #666;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Message */
+.error-message {
+    color: #dc3545;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    background-color: #f8d7da;
+    display: none;
+}
+
+/* Button States */
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Auth Status */
+#auth-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logout-button {
+    background: linear-gradient(90deg, #FFCAD4, #F4ACB7);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+    background: linear-gradient(90deg, #F4ACB7, #FFCAD4);
+    transform: translateY(-2px);
+}
+
+/* Price filter styles */
+#price-filter {
+    background-color: #FFF5F7;
+    border: 2px solid #FFCAD4;
+    border-radius: 8px;
+    padding: 0.5rem;
+    color: #6D6875;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#price-filter:hover {
+    background-color: #FFCAD4;
+    color: white;
+}
+
+/* View details button styles */
+.view-details {
+    background: linear-gradient(90deg, #FFCAD4, #F4ACB7);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.view-details:hover {
+    background: linear-gradient(90deg, #F4ACB7, #FFCAD4);
+    transform: translateY(-2px);
 }
