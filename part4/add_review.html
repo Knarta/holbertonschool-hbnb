@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Review</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="images/logo.png" type="image/png">
 </head>
 <body>
     <header>
+        <img src="images/logo.png" alt="logo">
         <nav>
-            <a href="index.html" id="index-link">
-                <img src="images/logo.png" alt="Logo" class="logo">
-            </a>
+            <a href="index.html">Home</a>
             <a href="login.html" id="login-button">Login</a>
         </nav>
     </header>
     <main>
+        <section id="add-review-form">
+            <h2>Add Your Review</h2>
         <form id="review-form">
-            <textarea id="review-text" placeholder="Write your review here..." rows="5" required></textarea>
+                <div class="form-group">
+                    <label for="rating">Rating:</label>
             <div id="star-rating">
                 <span class="star" data-value="1">&#9733;</span>
                 <span class="star" data-value="2">&#9733;</span>
@@ -26,10 +27,172 @@
                 <span class="star" data-value="4">&#9733;</span>
                 <span class="star" data-value="5">&#9733;</span>
             </div>
-            <button type="submit">Submit Review</button>
+                </div>
+                <div class="form-group">
+                    <label for="review-text">Your Review:</label>
+                    <textarea id="review-text" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Submit Review</button>
         </form>
+        </section>
     </main>
-    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Update login button based on authentication status
+            const token = localStorage.getItem('token');
+            const loginButton = document.getElementById('login-button');
+            
+            if (token) {
+                loginButton.textContent = 'Logout';
+                loginButton.onclick = function() {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                };
+            } else {
+                loginButton.textContent = 'Login';
+                loginButton.onclick = function() {
+                    window.location.href = 'login.html';
+                };
+            }
+
+            // Check if user is logged in
+            if (!token) {
+                alert('Please login to add a review');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Get place ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const placeId = urlParams.get('place_id');
+            
+            if (!placeId) {
+                alert('Place ID not found');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Initialize star rating
+            const stars = document.querySelectorAll('.star');
+            let selectedRating = 0;
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    selectedRating = value;
+                    
+                    // Update stars display
+                    stars.forEach(s => {
+                        if (parseInt(s.getAttribute('data-value')) <= value) {
+                            s.style.color = '#FFB4C2';
+                        } else {
+                            s.style.color = '#ddd';
+                        }
+                    });
+                });
+            });
+
+            const form = document.getElementById('review-form');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const reviewText = document.getElementById('review-text').value;
+                
+                if (!selectedRating) {
+                    alert('Please select a rating');
+                    return;
+                }
+
+                try {
+                    // Get place details to check ownership
+                    const placeResponse = await fetch(`http://localhost:5000/api/v1/places/${placeId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        mode: 'cors'
+                    });
+
+                    if (!placeResponse.ok) {
+                        if (placeResponse.status === 401) {
+                            alert('Your session has expired. Please login again.');
+                            window.location.href = 'login.html';
+                            return;
+                        }
+                        throw new Error('Failed to fetch place details');
+                    }
+
+                    const place = await placeResponse.json();
+                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                    const userId = tokenPayload.sub.id;
+
+                    // Check if user is the owner of the place
+                    if (place.owner_id === userId) {
+                        alert('You cannot review your own place');
+                        return;
+                    }
+
+                    // Check if user has already reviewed this place
+                    const reviewsResponse = await fetch(`http://localhost:5000/api/v1/places/${placeId}/reviews`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        mode: 'cors'
+                    });
+
+                    if (reviewsResponse.ok) {
+                        const reviews = await reviewsResponse.json();
+                        const hasReviewed = reviews.some(review => review.user_id === userId);
+                        if (hasReviewed) {
+                            alert('You have already reviewed this place');
+                            return;
+                        }
+                    } else if (reviewsResponse.status === 401) {
+                        alert('Your session has expired. Please login again.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    // Submit the review
+                    const response = await fetch('http://localhost:5000/api/v1/reviews/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        mode: 'cors',
+                        body: JSON.stringify({
+                            text: reviewText,
+                            rating: selectedRating,
+                            place_id: placeId,
+                            user_id: userId
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert('Review submitted successfully!');
+                        window.location.href = `place.html?id=${placeId}`;
+                    } else if (response.status === 401) {
+                        alert('Your session has expired. Please login again.');
+                        window.location.href = 'login.html';
+                    } else if (response.status === 403) {
+                        const errorData = await response.json();
+                        alert(errorData.error || 'You are not allowed to review this place');
+                    } else {
+                        throw new Error('Failed to submit review');
+                    }
+                } catch (error) {
+                    alert('Error submitting review: ' + error.message);
+                }
+            });
+        });
+    </script>
     <footer>
         <p>&copy;2025 HBnB Evolution All rights reserved</p>
     </footer>
