@@ -114,8 +114,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - All contributors and maintainers
 - The open-source community
 
-<div align="center">
-  
-[⬆️ Back to Top](#-table-of-contents)
-
-</div>
