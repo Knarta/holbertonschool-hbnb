@@ -1,8 +1,10 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:5000/api/v1';
+const API_BASE_URL = 'http://localhost:5500/api/v1';
 
 // Single DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing...');
+    
     // Add login-page class if we're on the login page
     const loginFormElement = document.getElementById('login-form');
     if (loginFormElement) {
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loginUser(email, password) {
+    console.log('Attempting login...');
     const submitButton = document.getElementById('submit-button');
     const loadingIndicator = document.getElementById('loading-indicator');
     const errorMessage = document.getElementById('error-message');
@@ -69,6 +72,7 @@ async function loginUser(email, password) {
     loadingIndicator.style.display = 'flex';
 
     try {
+        console.log('Sending login request to:', `${API_BASE_URL}/auth/login`);
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: {
@@ -83,14 +87,17 @@ async function loginUser(email, password) {
         }
 
         const data = await response.json();
+        console.log('Login successful, storing tokens');
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('refresh_token', data.refresh_token);
 
         // Update the connection status before redirecting
         checkAuthentication();
 
-        window.location.href = 'http://localhost:5500/part4/index.html';
+        console.log('Redirecting to index page');
+        window.location.href = 'index.html';
     } catch (error) {
+        console.error('Login error:', error);
         errorMessage.textContent = error.message;
         errorMessage.style.display = 'block';
     } finally {
@@ -100,15 +107,18 @@ async function loginUser(email, password) {
 }
 
 function checkAuthentication() {
+    console.log('Checking authentication status...');
     const token = localStorage.getItem('token');
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
 
     if (token) {
+        console.log('User is authenticated');
         if (loginButton) loginButton.style.display = 'none';
         if (logoutButton) logoutButton.style.display = 'block';
         return true;
     } else {
+        console.log('User is not authenticated');
         if (loginButton) loginButton.style.display = 'block';
         if (logoutButton) logoutButton.style.display = 'none';
         return false;
@@ -168,30 +178,159 @@ async function fetchPlaces() {
 
 function displayPlaces(places) {
     const placesContainer = document.getElementById('places-container');
-    if (!placesContainer) return; // Exit if container doesn't exist
+    if (!placesContainer) return;
 
-    placesContainer.innerHTML = ''; // Clear existing content
+    placesContainer.innerHTML = '';
+
+    // Liste complète des aménités possibles avec leurs icônes et émojis
+    const allAmenities = [
+        // Confort
+        { name: 'wifi', icon: 'wifi', emoji: '📶' },
+        { name: 'ac', icon: 'snowflake', emoji: '❄️' },
+        { name: 'tv', icon: 'tv', emoji: '📺' },
+        { name: 'heating', icon: 'fire', emoji: '🔥' },
+        { name: 'workspace', icon: 'laptop', emoji: '💻' },
+        
+        // Extérieur
+        { name: 'pool', icon: 'swimming-pool', emoji: '🏊' },
+        { name: 'bbq', icon: 'grill', emoji: '🍖' },
+        { name: 'hot tub', icon: 'hot-tub', emoji: '🛁' },
+        { name: 'garden', icon: 'tree', emoji: '🌳' },
+        { name: 'terrace', icon: 'umbrella-beach', emoji: '🏖️' },
+        
+        // Installations
+        { name: 'gym', icon: 'dumbbell', emoji: '💪' },
+        { name: 'spa', icon: 'spa', emoji: '💆' },
+        { name: 'fireplace', icon: 'fire', emoji: '🔥' },
+        { name: 'sauna', icon: 'hot-tub', emoji: '🧖' },
+        { name: 'game room', icon: 'gamepad', emoji: '🎮' },
+        
+        // Essentiels
+        { name: 'parking', icon: 'parking', emoji: '🅿️' },
+        { name: 'kitchen', icon: 'utensils', emoji: '🍳' },
+        { name: 'security', icon: 'shield-alt', emoji: '🛡️' },
+        { name: 'elevator', icon: 'elevator', emoji: '🛗' },
+        { name: 'laundry', icon: 'tshirt', emoji: '👕' },
+        
+        // Services
+        { name: 'breakfast', icon: 'coffee', emoji: '☕' },
+        { name: 'cleaning', icon: 'broom', emoji: '🧹' },
+        { name: 'concierge', icon: 'bell', emoji: '🔔' },
+        { name: 'room service', icon: 'utensils', emoji: '🍽️' },
+        { name: 'airport shuttle', icon: 'shuttle-van', emoji: '🚐' }
+    ];
+
+    // Fonction pour créer des ensembles d'aménités diversifiés
+    function createDiverseAmenitySet() {
+        // Créer des catégories d'aménités
+        const categories = {
+            comfort: ['wifi', 'ac', 'tv', 'heating', 'workspace'],
+            outdoor: ['pool', 'bbq', 'hot tub', 'garden', 'terrace'],
+            facilities: ['gym', 'spa', 'fireplace', 'sauna', 'game room'],
+            essentials: ['parking', 'kitchen', 'security', 'elevator', 'laundry'],
+            services: ['breakfast', 'cleaning', 'concierge', 'room service', 'airport shuttle']
+        };
+
+        // Sélectionner une aménité de chaque catégorie
+        const selectedAmenities = [];
+        Object.values(categories).forEach(category => {
+            const randomIndex = Math.floor(Math.random() * category.length);
+            const amenityName = category[randomIndex];
+            const amenity = allAmenities.find(a => a.name === amenityName);
+            if (amenity) selectedAmenities.push(amenity);
+        });
+
+        // Ajouter 2 aménités supplémentaires aléatoires
+        const remainingAmenities = allAmenities.filter(a => !selectedAmenities.includes(a));
+        const shuffledRemaining = [...remainingAmenities].sort(() => Math.random() - 0.5);
+        selectedAmenities.push(...shuffledRemaining.slice(0, 2));
+
+        // Mélanger les aménités sélectionnées
+        return selectedAmenities.sort(() => Math.random() - 0.5);
+    }
 
     places.forEach(place => {
         const placeElement = document.createElement('div');
         placeElement.className = 'place-card';
-        placeElement.innerHTML = `
-            <img src="${place.image_url || 'images/default-place.jpg'}" alt="${place.name}" class="place-image">
-            <h3>${place.name}</h3>
-            <p>${place.description}</p>
-            <p>Price: $${place.price || 'N/A'}</p>
-            <button class="view-details-button" data-place-id="${place.id}">View Details</button>
+        
+        // Créer un ensemble d'aménités diversifié pour chaque place
+        const selectedAmenities = createDiverseAmenitySet();
+
+        const amenitiesHTML = `
+            <div class="place-amenities">
+                <h4>Amenities</h4>
+                <ul>
+                    ${selectedAmenities.map(amenity => `
+                        <li class="amenity-item" data-amenity="${amenity.name}">
+                            <i class="fas fa-${amenity.icon}"></i>
+                            <span class="amenity-emoji">${amenity.emoji}</span>
+                            <span class="amenity-name">${amenity.name}</span>
+                            <div class="amenity-tooltip">${amenity.name}</div>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
         `;
+
+        placeElement.innerHTML = `
+            <img src="${place.image_url || 'images/default-place.jpg'}" alt="${place.title}" class="place-image">
+            <div class="place-content">
+                <h3>${place.title}</h3>
+                <p class="place-description">${place.description}</p>
+                <p class="place-price">$${place.price || 'N/A'}/night</p>
+                ${amenitiesHTML}
+                <button class="view-details-button" data-place-id="${place.id}">View Details</button>
+            </div>
+        `;
+
         placesContainer.appendChild(placeElement);
     });
 
-    // Add event listeners to all view details buttons
+    // Ajouter les écouteurs d'événements pour les boutons de détails
     document.querySelectorAll('.view-details-button').forEach(button => {
         button.addEventListener('click', function () {
             const placeId = this.getAttribute('data-place-id');
             window.location.href = `place.html?id=${placeId}`;
         });
     });
+
+    // Ajouter les écouteurs d'événements pour les aménités
+    document.querySelectorAll('.amenity-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.classList.add('amenity-hover');
+        });
+        item.addEventListener('mouseleave', function() {
+            this.classList.remove('amenity-hover');
+        });
+    });
+}
+
+// Helper function to get appropriate icon for each amenity
+function getAmenityIcon(amenityName) {
+    const iconMap = {
+        'wifi': { icon: 'wifi', emoji: '📶' },
+        'pool': { icon: 'swimming-pool', emoji: '🏊' },
+        'parking': { icon: 'parking', emoji: '🅿️' },
+        'kitchen': { icon: 'utensils', emoji: '🍳' },
+        'tv': { icon: 'tv', emoji: '📺' },
+        'ac': { icon: 'snowflake', emoji: '❄️' },
+        'washer': { icon: 'tshirt', emoji: '🧺' },
+        'dryer': { icon: 'tshirt', emoji: '👕' },
+        'heating': { icon: 'fire', emoji: '🔥' },
+        'workspace': { icon: 'laptop', emoji: '💻' },
+        'breakfast': { icon: 'coffee', emoji: '☕' },
+        'gym': { icon: 'dumbbell', emoji: '💪' },
+        'elevator': { icon: 'elevator', emoji: '🛗' },
+        'hot tub': { icon: 'hot-tub', emoji: '🛁' },
+        'fireplace': { icon: 'fire', emoji: '🔥' },
+        'bbq': { icon: 'grill', emoji: '🍖' },
+        'security': { icon: 'shield-alt', emoji: '🛡️' },
+        'smoke alarm': { icon: 'smoking-ban', emoji: '🚭' },
+        'first aid': { icon: 'first-aid', emoji: '🏥' },
+        'fire extinguisher': { icon: 'fire-extinguisher', emoji: '🧯' }
+    };
+
+    return iconMap[amenityName.toLowerCase()] || { icon: 'check-circle', emoji: '✅' };
 }
 
 function getCookie(name) {
@@ -207,7 +346,7 @@ function getCookie(name) {
 
 async function submitReview(token, placeId, reviewText, rating) {
     try {
-        const response = await fetch('https://api.example.com/reviews', {
+        const response = await fetch('http://localhost:5500/part4/add-reviews', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -298,8 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add logout functionality
 function logout() {
+    console.log('Logging out...');
     localStorage.removeItem('token');
     localStorage.removeItem('refresh_token');
     checkAuthentication();
-    window.location.href = 'http://localhost:5500/part4/index.html';
+    console.log('Redirecting to index page');
+    window.location.href = 'index.html';
 }
