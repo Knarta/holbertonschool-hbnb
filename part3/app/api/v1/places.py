@@ -107,8 +107,6 @@ class PlaceResource(Resource):
     @jwt_required()
     def get(self, place_id):
         """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID,
-        # including associated owner and amenities
         place_data = facade.get_place(place_id)
 
         if not place_data:
@@ -120,7 +118,7 @@ class PlaceResource(Resource):
                 "latitude": place_data.latitude,
                 "longitude": place_data.longitude,
                 "owner_id": place_data.owner_id,
-                "amenities": place_data.amenities}, 200
+                "amenities": [{"id": a.id, "name": a.name} for a in place_data.amenities]}, 200
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -157,4 +155,38 @@ class PlaceResource(Resource):
                 "latitude": updated_place.latitude,
                 "longitude": updated_place.longitude,
                 "owner_id": updated_place.owner_id,
-                "amenities": updated_place.amenities}, 200
+                "amenities": [{"id": a.id, "name": a.name} for a in updated_place.amenities]}, 200
+
+@api.route('/<place_id>/amenities')
+class PlaceAmenities(Resource):
+    @api.response(200, 'Place amenities retrieved successfully')
+    @api.response(404, 'Place not found')
+    @jwt_required()
+    def get(self, place_id):
+        """Get amenities for a specific place"""
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        
+        amenities = place.amenities
+        return {'amenities': [{"id": a.id, "name": a.name} for a in amenities]}, 200
+
+@api.route('/<place_id>/reviews')
+class PlaceReviews(Resource):
+    @api.response(200, 'Place reviews retrieved successfully')
+    @api.response(404, 'Place not found')
+    @jwt_required()
+    def get(self, place_id):
+        """Get reviews for a specific place"""
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        
+        reviews = place.reviews
+        return {'reviews': [{
+            "id": r.id,
+            "text": r.text,
+            "rating": r.rating,
+            "user_id": r.user_id,
+            "place_id": r.place_id
+        } for r in reviews]}, 200
