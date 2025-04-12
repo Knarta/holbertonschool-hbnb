@@ -1,24 +1,5 @@
 # 🏠 Holberton School HBNB Project
 
-<div align="center">
-  
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
-[![Style Guide](https://img.shields.io/badge/code%20style-pep8-brightgreen.svg)](https://www.python.org/dev/peps/pep-0008/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![Contributors](https://img.shields.io/badge/contributors-3-orange.svg)](#-team)
-[![Stars](https://img.shields.io/github/stars/yKnarta/holbertonschool-hbnb?style=social)](https://github.com/yKnarta/holbertonschool-hbnb)
-
-</div>
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/yKnarta/holbertonschool-hbnb/main/assets/hbnb-logo.png" alt="HBNB Logo" width="200"/>
-  
-  ### 🚀 A Full-Stack Clone of AirBnB
-  
-  [![Try it now](https://img.shields.io/badge/Try%20it%20now!-Click%20here-blue)](https://github.com/yKnarta/holbertonschool-hbnb)
-  
-</div>
 
 ## 📋 Table of Contents
 - [✨ Description](#-description)
