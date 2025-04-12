@@ -65,7 +65,13 @@
                 <button type="submit">Submit Review</button>
             </form>
         </section>
+        <script>
+            function redirectToAddReview(placeId) {
+                window.location.href = `add_review.html?place_id=${placeId}`;
+            }
+        </script>
     </main>
     <script src="scripts.js"></script>
+
 </body>
 </html>
