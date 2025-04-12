@@ -17,8 +17,27 @@ from app.api.v1.amenities import api as amenities_ns
 
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
     app.config.from_object(config_class)
+    
+    # Initialize CORS with specific configuration
+    CORS(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:5501", "http://127.0.0.1:5501"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "Accept"],
+            "supports_credentials": True,
+            "expose_headers": ["Content-Type", "Authorization"],
+            "max_age": 3600
+        }
+    })
+    
+    # JWT Configuration
+    app.config['JWT_SECRET_KEY'] = 'your-256-bit-secret-key-here'  # Change this to a secure secret key
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1 hour
+    app.config['JWT_REFRESH_TOKEN_EXPIRES'] = 86400  # 24 hours
+    app.config['JWT_ALGORITHM'] = 'HS256'
+    app.config['JWT_HEADER_TYPE'] = 'Bearer'
+    app.config['JWT_HEADER_NAME'] = 'Authorization'
     
     authorizations = {
         'token': {
