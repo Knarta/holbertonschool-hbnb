@@ -16,62 +16,101 @@
     </header>
     <main>
         <section id="place-details">
-            <p class="place-info">Host: John Doe</p>
-            <p class="place-info">Price: $100 per night</p>
-            <p class="place-info">Description: A beautiful beach house with ocean views.</p>
-            <p class="place-info">Amenities: WiFi, Pool, Kitchen</p>
-       </section>
+            <h2 id="place-title">Loading...</h2>
+            <div class="place-image-container">
+                <img id="place-image" src="images/default-place.jpg" alt="Place image">
+            </div>
+            <div class="place-info-container">
+                <p class="place-info" id="place-host">Host: Loading...</p>
+                <p class="place-info" id="place-price">Price: Loading...</p>
+                <p class="place-info" id="place-description">Description: Loading...</p>
+                <p class="place-info" id="place-amenities">Amenities: Loading...</p>
+            </div>
+        </section>
         <section id="reviews">
             <h3>Reviews</h3>
-            <div class="review">
-                <p>Great place! Had a wonderful time.</p>
-                <p>- Alice</p>
-                <p>Rating:
-                    <span class="stars">
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                    </span>
-                </p>
-            </div>
-            <div class="review">
-                <p>Not as expected. The place was a bit dirty.</p>
-                <p>- Bob</p>
-                <p>Rating:
-                    <span class="stars">
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star half">&#9734;</span>
-                    </span>
-                </p>
+            <button id="add-review-button" onclick="redirectToAddReview()">Add Review</button>
+            <div id="reviews-container">
+                <!-- Reviews will be loaded here -->
             </div>
         </section>
-
-        <section id="add-review" style="display: none;">
-            <h3>Add a Review</h3>
-            <form id="review-form">
-                <textarea id="review-text" placeholder="Write your review here..." rows="5" required></textarea>
-                <div id="star-rating">
-                    <span class="star" data-value="1">&#9733;</span>
-                    <span class="star" data-value="2">&#9733;</span>
-                    <span class="star" data-value="3">&#9733;</span>
-                    <span class="star" data-value="4">&#9733;</span>
-                    <span class="star" data-value="5">&#9733;</span>
-                </div>
-                <button type="submit">Submit Review</button>
-            </form>
-        </section>
-        <script>
-            function redirectToAddReview(placeId) {
-                window.location.href = `add_review.html?place_id=${placeId}`;
-            }
-        </script>
     </main>
-    <script src="scripts.js"></script>
+    <script>
+        async function loadPlaceDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const placeId = urlParams.get('id');
+            
+            if (!placeId) {
+                showError('Place ID not found in URL');
+                return;
+            }
 
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch place details');
+                }
+                const place = await response.json();
+                
+                // Update place details
+                document.getElementById('place-title').textContent = place.title;
+                document.getElementById('place-image').src = place.image_url || 'images/default-place.jpg';
+                document.getElementById('place-host').textContent = `Host: ${place.owner_id}`;
+                document.getElementById('place-price').textContent = `Price: $${place.price} per night`;
+                document.getElementById('place-description').textContent = `Description: ${place.description}`;
+                
+                // Load amenities
+                const amenitiesResponse = await fetch(`http://localhost:5000/api/v1/places/${placeId}/amenities`);
+                if (amenitiesResponse.ok) {
+                    const amenities = await amenitiesResponse.json();
+                    document.getElementById('place-amenities').textContent = `Amenities: ${amenities.map(a => a.name).join(', ')}`;
+                }
+                
+                // Load reviews
+                const reviewsResponse = await fetch(`http://localhost:5000/api/v1/places/${placeId}/reviews`);
+                if (reviewsResponse.ok) {
+                    const reviews = await reviewsResponse.json();
+                    const reviewsContainer = document.getElementById('reviews-container');
+                    reviewsContainer.innerHTML = reviews.map(review => `
+                        <div class="review">
+                            <div class="review-header">
+                                <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
+                                <span class="review-date">${new Date(review.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p class="review-text">${review.text}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.querySelector('main').prepend(errorDiv);
+        }
+
+        function redirectToAddReview() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const placeId = urlParams.get('id');
+            window.location.href = `add_review.html?place_id=${placeId}`;
+        }
+
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            document.getElementById('login-button').textContent = 'Logout';
+            document.getElementById('login-button').onclick = function() {
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            };
+        }
+
+        // Load place details when page loads
+        document.addEventListener('DOMContentLoaded', loadPlaceDetails);
+    </script>
 </body>
 </html>
