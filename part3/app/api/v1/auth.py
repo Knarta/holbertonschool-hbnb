@@ -1,7 +1,6 @@
 from flask_restx import Namespace, Resource, fields, api
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, verify_jwt_in_request, get_jwt
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('auth', description='Authentication operations')
 
@@ -25,10 +24,23 @@ class Login(Resource):
         if not user or not user.verify_password(credentials['password']):
             return {'error': 'Invalid credentials'}, 401
 
-        # Step 3: Create a JWT token with the user's id and is_admin flag
+        # Step 3: Create JWT tokens with the user's id and is_admin flag
         access_token = create_access_token(identity={'id': str(user.id), 'is_admin': user.is_admin})
+        refresh_token = create_refresh_token(identity={'id': str(user.id), 'is_admin': user.is_admin})
         
-        # Step 4: Return the JWT token to the client
+        # Step 4: Return the JWT tokens to the client
+        return {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }, 200
+
+@api.route('/refresh')
+class RefreshToken(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        """Refresh an access token"""
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity=current_user)
         return {'access_token': access_token}, 200
     
 @api.route('/protected')
