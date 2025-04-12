@@ -1,6 +1,7 @@
 INSERT INTO users (id, first_name, last_name, email, password, is_admin)
 VALUES
-    ('ea152844-7d1b-4f0f-8204-d04a0907db98', Admin, HBnB, admin@hbnb.io, '$2a$12$M6b8rmKikihpo5eEkRmcROZI.MMDEFgmfyLL70ULaHDk9r7LvugjO', TRUE),
+    ('8a24f2d2-4d34-4eee-af4d-702b90a9bc96', 
+    Salut, string, salut@gmail.com, '$2b$12$7SmtZ5iY7NQl13vNTHdf2uz2QcJyTDj9AKEilYGAIBHaNSbGGlSDu', TRUE),
 
 INSERT INTO amenities (id, name)
 VALUES
@@ -10,7 +11,9 @@ VALUES
 
 INSERT INTO places (id, title, description, price, latitude, longitude, owner_id)
 VALUES
-("3b1f1ce1-9664-45ed-99bf-2db3d4fada5a", "Beautiful place", "This is a beautiful place", 46.00, 80.00, -100.00, "ea152844-7d1b-4f0f-8204-d04a0907db98"),
+("8595d235-da9b-499b-861f-192288975036", "Cozy Country Cottage", "A charming cottage nestled in the countryside, featuring rustic decor and scenic views.", 90.00, 48.8566, 2.3522, "ea152844-7d1b-4f0f-8204-d04a0907db98"),
+("8595d235-da9b-499b-861f-192288975036", "Luxury Villa with Pool", "Experience a luxurious stay in this spacious villa featuring a private pool, landscaped gardens, and 5-star facilities.", 300.00, 34.0522, -118.2437, "ea152844-7d1b-4f0f-8204-d04a0907db98"),
+("8595d235-da9b-499b-861f-192288975036", "Modern Downtown Loft", "A trendy loft located in the heart of the city offering modern amenities and a vibrant nightlife.", 50.00, 40.7128, -74.006, "ea152844-7d1b-4f0f-8204-d04a0907db98"),
 
 INSERT INTO places_amenity (place_id, amenity_id)
 VALUES
