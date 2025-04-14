@@ -92,9 +92,9 @@ Access the web interface at: `http://localhost:5000`
   
 | Member | Role | GitHub |
 |--------|------|--------|
-| Charlène | Lead Developer | [@Knarta](https://github.com/Knarta) |
-| Bryan | Backend Developer | [@mrfouu](https://github.com/mrfouu) |
-| Brenda | Frontend Developer | [@Bree-Coding](https://github.com/Bree-Coding) |
+| Charlène | Co-Developer | [@Knarta](https://github.com/Knarta) |
+| Bryan | Co-Developer | [@mrfouu](https://github.com/mrfouu) |
+| Brenda | Co-Developer | [@Bree-Coding](https://github.com/Bree-Coding) |
 
 </div>
 
